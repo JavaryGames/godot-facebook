@@ -1,36 +1,43 @@
 package org.godotengine.godot;
 
-import com.facebook.FacebookSdk;
-import com.facebook.CallbackManager;
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
+import android.util.Log;
+
 import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.FacebookSdkNotInitializedException;
 import com.facebook.LoginStatusCallback;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.share.widget.AppInviteDialog;
 import com.facebook.share.model.AppInviteContent;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdkNotInitializedException;
-import android.app.Activity;
-import android.content.Intent;
-import android.util.Log;
+import com.facebook.share.Sharer;
+import com.facebook.share.model.ShareLinkContent;
+import com.facebook.share.widget.ShareDialog;
 
 public class GodotFacebook extends Godot.SingletonBase {
 
     private Godot activity = null;
     private Integer facebookCallbackId = 0;
     private CallbackManager callbackManager;
+    private ShareDialog shareDialog;
 
-    static public Godot.SingletonBase initialize(Activity p_activity) 
-    { 
+    static public Godot.SingletonBase initialize(Activity p_activity) { 
         return new GodotFacebook(p_activity); 
     } 
 
-    public GodotFacebook(Activity p_activity) 
-    {
-        registerClass("GodotFacebook", new String[]{"init", "setFacebookCallbackId", "getFacebookCallbackId", "appInvite", "login", "logout", "isLoggedIn"});
+    public GodotFacebook(Activity p_activity) {
+        registerClass("GodotFacebook", new String[]{"init", "setFacebookCallbackId",
+         "getFacebookCallbackId", "appInvite", "login", "logout", "isLoggedIn", "shareLink",
+         "shareLinkWithQuote"});
         activity = (Godot)p_activity;
         callbackManager = CallbackManager.Factory.create();
+        shareDialog = new ShareDialog(p_activity);
 
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
@@ -49,12 +56,31 @@ public class GodotFacebook extends Godot.SingletonBase {
                     GodotLib.calldeferred(facebookCallbackId, "login_failed", new Object[]{exception.toString()});
                 }
             });
+            
+        // Share Dialog callbacks
+        
+        shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
+            @Override
+            public void onSuccess(Sharer.Result result) {
+                GodotLib.calldeferred(facebookCallbackId, "login_success", new Object[]{result.getPostId()});
+            }
+
+            @Override
+            public void onCancel() {
+                GodotLib.calldeferred(facebookCallbackId, "share_cancelled", new Object[]{});
+            }
+
+            @Override
+            public void onError(FacebookException error) {
+                GodotLib.calldeferred(facebookCallbackId, "share_failed", new Object[]{error.toString()});
+            }
+        });
+        
     }
 
     // Public methods
 
-    public void init(final String key)
-    {
+    public void init(final String key){
         activity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -78,8 +104,7 @@ public class GodotFacebook extends Godot.SingletonBase {
 		return facebookCallbackId;
 	}
 
-    public void appInvite(final String appLinkUrl, final String previewImageUrl)
-    {
+    public void appInvite(final String appLinkUrl, final String previewImageUrl) {
         Log.i("godot", "Facebook appInvite");
         activity.runOnUiThread(new Runnable()
         {
@@ -100,8 +125,7 @@ public class GodotFacebook extends Godot.SingletonBase {
         });
     }
 
-    public void login()
-    {
+    public void login() {
         Log.i("godot", "Facebook login");
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if(accessToken != null && !accessToken.isExpired()) {
@@ -111,14 +135,12 @@ public class GodotFacebook extends Godot.SingletonBase {
         }
     }
 
-    public void logout()
-    {
+    public void logout() {
         Log.i("godot", "Facebook logout");
         LoginManager.getInstance().logOut();
     }
 
-    public void isLoggedIn()
-    {
+    public void isLoggedIn() {
         Log.i("godot", "Facebook isLoggedIn");
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
         if(accessToken == null) {
@@ -129,6 +151,27 @@ public class GodotFacebook extends Godot.SingletonBase {
             GodotLib.calldeferred(facebookCallbackId, "login_success", new Object[]{accessToken.getToken()});
         }
     }
+    
+    public void shareLink(final String link){
+        Log.i("godot", "Facebook shareLink");
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+        	ShareLinkContent linkContent = new ShareLinkContent.Builder()
+        		.setContentUrl(Uri.parse(link))
+        		.build();
+        	shareDialog.show(linkContent);
+        }
+    }
+    
+    public void shareLink(final String link, final String quote){
+        Log.i("godot", "Facebook shareLink");
+        if (ShareDialog.canShow(ShareLinkContent.class)) {
+        	ShareLinkContent linkContent = new ShareLinkContent.Builder()
+        		.setContentUrl(Uri.parse(link))
+                .setQuote(quote)
+        		.build();
+        	shareDialog.show(linkContent);
+        }
+    }
 
     // Internal methods
 
@@ -137,8 +180,7 @@ public class GodotFacebook extends Godot.SingletonBase {
         //GodotLib.calldeferred(purchaseCallbackId, "consume_fail", new Object[]{});
 	}
 
-    @Override protected void onMainActivityResult (int requestCode, int resultCode, Intent data)
-    {
+    @Override protected void onMainActivityResult (int requestCode, int resultCode, Intent data){
         callbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
