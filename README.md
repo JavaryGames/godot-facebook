@@ -6,11 +6,11 @@ Highlights of this fork:
 + Added ShareDialog methods
 + No need to change build.gradle.template anymore
 
-## How to use it
+## How to use it (Android)
 
 1. Clone the repo
-2. Copy the `GodotFacebook` folder to `godot/modules/` of your clone of [Godot-source](https://github.com/godotengine/godot). 
-3. Edit `/GodotFacebook/android/AndroidManifestChunk.xml` and change ´fb123456789123456´ with your Facebook App Id
+2. Copy the `facebook` folder to `godot/modules/` of your clone of [Godot-source](https://github.com/godotengine/godot). 
+3. Edit `/facebook/android/AndroidManifestChunk.xml` and change ´fb123456789123456´ with your Facebook App Id
 4. Compile the Godot Android template [like you'll normally would](http://docs.godotengine.org/en/latest/reference/compiling_for_android.html)
 5. You'll find your APK in `godot/bin` then [you must reference them on your Godot project](http://docs.godotengine.org/en/latest/development/compiling/compiling_for_android.html#using-the-export-templates)
 6. Be sure to edit your `engine.cfg` and add this line:
