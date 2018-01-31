@@ -33,8 +33,8 @@ public class GodotFacebook extends Godot.SingletonBase {
 
     public GodotFacebook(Activity p_activity) {
         registerClass("GodotFacebook", new String[]{"init", "setFacebookCallbackId",
-         "getFacebookCallbackId", "appInvite", "login", "logout", "isLoggedIn", "shareLink",
-         "shareLinkWithQuote"});
+         "getFacebookCallbackId", "login", "logout", "isLoggedIn", "shareLink",
+         "shareLinkWithoutQuote"});
         activity = (Godot)p_activity;
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(p_activity);
@@ -104,27 +104,6 @@ public class GodotFacebook extends Godot.SingletonBase {
 		return facebookCallbackId;
 	}
 
-    public void appInvite(final String appLinkUrl, final String previewImageUrl) {
-        Log.i("godot", "Facebook appInvite");
-        activity.runOnUiThread(new Runnable()
-        {
-            @Override public void run()
-            {
-                if (FacebookSdk.isInitialized()) {
-                    if (AppInviteDialog.canShow()) {
-                        AppInviteContent content = new AppInviteContent.Builder()
-                                    .setApplinkUrl(appLinkUrl)
-                                    .setPreviewImageUrl(previewImageUrl)
-                                    .build();
-                        AppInviteDialog.show(activity, content);
-                    }
-                } else {
-                    Log.d("godot", "Facebook sdk not initialized");   
-                }
-            }
-        });
-    }
-
     public void login() {
         Log.i("godot", "Facebook login");
         AccessToken accessToken = AccessToken.getCurrentAccessToken();
@@ -152,7 +131,7 @@ public class GodotFacebook extends Godot.SingletonBase {
         }
     }
     
-    public void shareLink(final String link){
+    public void shareLinkWithoutQuote(final String link){
         Log.i("godot", "Facebook shareLink");
         if (ShareDialog.canShow(ShareLinkContent.class)) {
         	ShareLinkContent linkContent = new ShareLinkContent.Builder()
