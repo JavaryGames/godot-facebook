@@ -1,4 +1,4 @@
-# Facebook module for [Godot Game Engine](http://godotengine.org/) (Android only). 
+# Facebook module for [Godot Game Engine](http://godotengine.org/) (Android only)(iOS coming soon). 
 
 Highlights of this fork:
 
