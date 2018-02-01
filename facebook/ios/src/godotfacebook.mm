@@ -23,6 +23,10 @@ GodotFacebook::~GodotFacebook() {
 
 void GodotFacebook::init(const String &fbAppId){
     NSLog(@"GodotFacebook Module initialized");
+    NSDictionary *launchOptions = @{};
+    [[FBSDKApplicationDelegate sharedInstance] application:[UIApplication sharedApplication]
+    didFinishLaunchingWithOptions:launchOptions];
+    initialized = true;
 }
 
 void GodotFacebook::login(){
@@ -35,7 +39,7 @@ void GodotFacebook::logout(){
 
 void GodotFacebook::setFacebookCallbackId(int cbackId){
     NSLog(@"GodotFacebook Module set callback id");
-    callbackId = cbackId; 
+    callbackId = cbackId;
 }
 
 int GodotFacebook::getFacebookCallbackId(){
@@ -45,15 +49,28 @@ int GodotFacebook::getFacebookCallbackId(){
 
 bool GodotFacebook::isLoggedIn(){
     NSLog(@"GodotFacebook Module is logged in");
-    return initialized;
+    return false;
 }
 
 void GodotFacebook::shareLink(const String &url, const String &quote){
     NSLog(@"GodotFacebook Module share link content");
+    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+    content.quote = [NSString stringWithCString:quote.utf8().get_data() encoding: NSUTF8StringEncoding];
+    content.contentURL = [NSURL URLWithString:[NSString stringWithCString:url.utf8().get_data() encoding: NSUTF8StringEncoding]];
+    FBSDKShareDialog *shareDialog = [[FBSDKShareDialog alloc] init];
+    shareDialog.fromViewController = [AppDelegate getViewController];
+    shareDialog.shareContent = content;
+    [shareDialog show];
 }
 
 void GodotFacebook::shareLinkWithoutQuote(const String &url){
     NSLog(@"GodotFacebook Module share link without quote");
+    FBSDKShareLinkContent *content = [[FBSDKShareLinkContent alloc] init];
+    content.contentURL = [NSURL URLWithString:@"https://www.facebook.com/FacebookDevelopers"];
+    FBSDKShareDialog *shareDialog = [[FBSDKShareDialog alloc] init];
+    shareDialog.fromViewController = [AppDelegate getViewController];
+    shareDialog.shareContent = content;
+    [shareDialog show];
 }
 
 
