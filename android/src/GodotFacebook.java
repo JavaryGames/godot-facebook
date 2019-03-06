@@ -19,6 +19,7 @@ import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.Sharer;
 import com.facebook.share.model.ShareLinkContent;
 import com.facebook.share.widget.ShareDialog;
+import com.facebook.appevents.AppEventsLogger;
 
 public class GodotFacebook extends Godot.SingletonBase {
 
@@ -26,6 +27,7 @@ public class GodotFacebook extends Godot.SingletonBase {
     private Integer facebookCallbackId = 0;
     private CallbackManager callbackManager;
     private ShareDialog shareDialog;
+    private AppEventsLogger logger;
 
     static public Godot.SingletonBase initialize(Activity p_activity) { 
         return new GodotFacebook(p_activity); 
@@ -34,10 +36,11 @@ public class GodotFacebook extends Godot.SingletonBase {
     public GodotFacebook(Activity p_activity) {
         registerClass("GodotFacebook", new String[]{"init", "setFacebookCallbackId",
          "getFacebookCallbackId", "login", "logout", "isLoggedIn", "shareLink",
-         "shareLinkWithoutQuote"});
+         "shareLinkWithoutQuote", "sendEvent"});
         activity = (Godot)p_activity;
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(p_activity);
+        logger = AppEventsLogger.newLogger(p_activity);
 
         LoginManager.getInstance().registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
                 @Override
@@ -94,6 +97,10 @@ public class GodotFacebook extends Godot.SingletonBase {
                 }
             }
         });
+    }
+
+    public void sendEvent(final String eventName) {
+        logger.logEvent(eventName);
     }
 
     public void setFacebookCallbackId(int facebookCallbackId) {

@@ -76,6 +76,7 @@ modules="org/godotengine/godot/GodotFacebook"
 * login()
 * logout()
 * isLoggedIn()
+* sendEvent(eventName)
 
 **Callback functions:**
 * login_success(token)
