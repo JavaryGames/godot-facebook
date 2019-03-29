@@ -1,2 +1,2 @@
-void register_facebook_types();
-void unregister_facebook_types();
+void register_godot_facebook_types();
+void unregister_godot_facebook_types();

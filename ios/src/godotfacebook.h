@@ -1,11 +1,11 @@
 #ifndef __GODOTFACEBOOK_H__
 #define __GODOTFACEBOOK_H__
 
-#include "reference.h"
+#include "core/reference.h"
 
 class GodotFacebook: public Reference{
 
-    OBJ_TYPE(GodotFacebook, Reference);
+    GDCLASS(GodotFacebook, Reference);
 
     bool initialized;
     int callbackId;

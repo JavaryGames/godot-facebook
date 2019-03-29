@@ -76,12 +76,12 @@ void GodotFacebook::shareLinkWithoutQuote(const String &url){
 
 
 void GodotFacebook::_bind_methods() {
-    ObjectTypeDB::bind_method("init",&GodotFacebook::init);
-    ObjectTypeDB::bind_method("login",&GodotFacebook::login);
-    ObjectTypeDB::bind_method("logout",&GodotFacebook::logout);
-    ObjectTypeDB::bind_method("setFacebookCallbackId",&GodotFacebook::setFacebookCallbackId);
-    ObjectTypeDB::bind_method("getFacebookCallbackId",&GodotFacebook::getFacebookCallbackId);
-    ObjectTypeDB::bind_method("isLoggedIn",&GodotFacebook::isLoggedIn);
-    ObjectTypeDB::bind_method("shareLink",&GodotFacebook::shareLink);
-    ObjectTypeDB::bind_method("shareLinkWithoutQuote",&GodotFacebook::shareLinkWithoutQuote);
+    ClassDB::bind_method("init",&GodotFacebook::init);
+    ClassDB::bind_method("login",&GodotFacebook::login);
+    ClassDB::bind_method("logout",&GodotFacebook::logout);
+    ClassDB::bind_method("setFacebookCallbackId",&GodotFacebook::setFacebookCallbackId);
+    ClassDB::bind_method("getFacebookCallbackId",&GodotFacebook::getFacebookCallbackId);
+    ClassDB::bind_method("isLoggedIn",&GodotFacebook::isLoggedIn);
+    ClassDB::bind_method("shareLink",&GodotFacebook::shareLink);
+    ClassDB::bind_method("shareLinkWithoutQuote",&GodotFacebook::shareLinkWithoutQuote);
 }

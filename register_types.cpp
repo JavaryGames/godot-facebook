@@ -1,11 +1,11 @@
 #include "register_types.h"
-#include "object_type_db.h"
-#include "core/globals.h"
+#include "core/class_db.h"
+#include "core/engine.h"
 #include "ios/src/godotfacebook.h"
 
-void register_facebook_types(){
-    Globals::get_singleton()->add_singleton(Globals::Singleton("GodotFacebook", memnew(GodotFacebook)));
+void register_godot_facebook_types(){
+    Engine::get_singleton()->add_singleton(Engine::Singleton("GodotFacebook", memnew(GodotFacebook)));
 }
 
-void unregister_facebook_types(){
+void unregister_godot_facebook_types(){
 }

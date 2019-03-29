@@ -9,5 +9,5 @@ def configure(env):
         env.disable_module()	
         
     if env['platform'] == "iphone":
-        env.Append(FRAMEWORKPATH=['modules/facebook/ios/lib'])
+        env.Append(FRAMEWORKPATH=['modules/godot_facebook/ios/lib'])
         env.Append(LINKFLAGS=['-ObjC', '-framework', 'FBSDKCoreKit', '-framework', 'FBSDKLoginKit', '-framework', 'FBSDKShareKit', '-framework', 'Bolts'])
