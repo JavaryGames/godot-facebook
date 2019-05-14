@@ -26,6 +26,7 @@ public:
     bool isLoggedIn();
     void shareLink(const String &url, const String &quote);
     void shareLinkWithoutQuote(const String &url);
+    void sendEvent(const String &eventName);
 
     GodotFacebook();
     ~GodotFacebook();

@@ -73,7 +73,9 @@ void GodotFacebook::shareLinkWithoutQuote(const String &url){
     [shareDialog show];
 }
 
-
+void GodotFacebook::sendEvent(const String &eventName) {
+    [FBSDKAppEvents logEvent:[NSString stringWithCString:eventName.utf8().get_data() encoding: NSUTF8StringEncoding]];
+}
 
 void GodotFacebook::_bind_methods() {
     ClassDB::bind_method("init",&GodotFacebook::init);
@@ -84,4 +86,5 @@ void GodotFacebook::_bind_methods() {
     ClassDB::bind_method("isLoggedIn",&GodotFacebook::isLoggedIn);
     ClassDB::bind_method("shareLink",&GodotFacebook::shareLink);
     ClassDB::bind_method("shareLinkWithoutQuote",&GodotFacebook::shareLinkWithoutQuote);
+    ClassDB::bind_method("sendEvent", &GodotFacebook::sendEvent);
 }
