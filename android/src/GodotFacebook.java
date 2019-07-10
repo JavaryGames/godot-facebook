@@ -1,6 +1,7 @@
 package org.godotengine.godot;
 
 import android.app.Activity;
+import android.os.Bundle;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
@@ -37,7 +38,7 @@ public class GodotFacebook extends Godot.SingletonBase {
     public GodotFacebook(Activity p_activity) {
         registerClass("GodotFacebook", new String[]{"init", "setFacebookCallbackId",
          "getFacebookCallbackId", "login", "logout", "isLoggedIn", "shareLink",
-         "shareLinkWithoutQuote", "sendEvent", "sendContentViewEvent"});
+         "shareLinkWithoutQuote", "sendEvent", "sendContentViewEvent", "sendAchieveLevelEvent"});
         activity = (Godot)p_activity;
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(p_activity);
@@ -105,12 +106,19 @@ public class GodotFacebook extends Godot.SingletonBase {
     }
 
     public void sendContentViewEvent() {
-        sendEvent(AppEventsConstants.EVENT_NAME_VIEWED_CONTENT);
+        logger.logEvent(AppEventsConstants.EVENT_NAME_VIEWED_CONTENT);
+    }
+
+    public void sendAchieveLevelEvent(String level) {
+        Bundle params = new Bundle();
+        // Using string here because facebook docs say so
+        params.putString(AppEventsConstants.EVENT_PARAM_LEVEL, level);
+        logger.logEvent(AppEventsConstants.EVENT_NAME_ACHIEVED_LEVEL, params);
     }
 
     public void setFacebookCallbackId(int facebookCallbackId) {
-		this.facebookCallbackId = facebookCallbackId;
-	}
+        this.facebookCallbackId = facebookCallbackId;
+    }
 
     public int getFacebookCallbackId() {
 		return facebookCallbackId;
