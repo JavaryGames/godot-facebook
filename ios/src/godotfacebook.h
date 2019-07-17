@@ -27,6 +27,8 @@ public:
     void shareLink(const String &url, const String &quote);
     void shareLinkWithoutQuote(const String &url);
     void sendEvent(const String &eventName);
+    void sendContentViewEvent();
+    void sendAchieveLevelEvent(const String &level);
 
     GodotFacebook();
     ~GodotFacebook();

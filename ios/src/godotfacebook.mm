@@ -4,6 +4,7 @@
 #import <Foundation/Foundation.h>
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
+#import <FBSDKCoreKit/FBSDKAppEvents.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <FBSDKShareKit/FBSDKShareKit.h>
 #import <Bolts/Bolts.h>
@@ -77,6 +78,19 @@ void GodotFacebook::sendEvent(const String &eventName) {
     [FBSDKAppEvents logEvent:[NSString stringWithCString:eventName.utf8().get_data() encoding: NSUTF8StringEncoding]];
 }
 
+void GodotFacebook::sendContentViewEvent(){
+    [FBSDKAppEvents logEvent: FBSDKAppEventNameViewedContent];
+    //FBSDKAppEventNameViewedContent
+}
+
+void GodotFacebook::sendAchieveLevelEvent(const String &level){
+    NSDictionary *params = @{ FBSDKAppEventParameterNameLevel : [NSString stringWithCString:level.utf8().get_data() encoding: NSUTF8StringEncoding] };
+    //FBSDKAppEventParameterNameLevel
+    [FBSDKAppEvents logEvent:FBSDKAppEventNameAchievedLevel parameters:params];
+    //FBSDKAppEventNameAchievedLevel
+}
+
+
 void GodotFacebook::_bind_methods() {
     ClassDB::bind_method("init",&GodotFacebook::init);
     ClassDB::bind_method("login",&GodotFacebook::login);
@@ -87,4 +101,6 @@ void GodotFacebook::_bind_methods() {
     ClassDB::bind_method("shareLink",&GodotFacebook::shareLink);
     ClassDB::bind_method("shareLinkWithoutQuote",&GodotFacebook::shareLinkWithoutQuote);
     ClassDB::bind_method("sendEvent", &GodotFacebook::sendEvent);
+    ClassDB::bind_method("sendContentViewEvent", &GodotFacebook::sendContentViewEvent);
+    ClassDB::bind_method("sendAchieveLevelEvent", &GodotFacebook::sendAchieveLevelEvent);
 }
