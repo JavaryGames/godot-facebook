@@ -80,14 +80,11 @@ void GodotFacebook::sendEvent(const String &eventName) {
 
 void GodotFacebook::sendContentViewEvent(){
     [FBSDKAppEvents logEvent: FBSDKAppEventNameViewedContent];
-    //FBSDKAppEventNameViewedContent
 }
 
 void GodotFacebook::sendAchieveLevelEvent(const String &level){
     NSDictionary *params = @{ FBSDKAppEventParameterNameLevel : [NSString stringWithCString:level.utf8().get_data() encoding: NSUTF8StringEncoding] };
-    //FBSDKAppEventParameterNameLevel
     [FBSDKAppEvents logEvent:FBSDKAppEventNameAchievedLevel parameters:params];
-    //FBSDKAppEventNameAchievedLevel
 }
 
 
