@@ -5,6 +5,7 @@
 
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKCoreKit/FBSDKAppEvents.h>
+#import <FBSDKCoreKit/FBSDKAccessToken.h>
 #import <FBSDKLoginKit/FBSDKLoginKit.h>
 #import <FBSDKShareKit/FBSDKShareKit.h>
 #import <Bolts/Bolts.h>
@@ -32,6 +33,31 @@ void GodotFacebook::init(const String &fbAppId){
 
 void GodotFacebook::login(){
     NSLog(@"GodotFacebook Module login");
+    if ([FBSDKAccessToken currentAccessTokenIsActive]){
+        FBSDKAccessToken *accessToken = [FBSDKAccessToken currentAccessToken];
+        Object *obj = ObjectDB::get_instance(callbackId);
+        Array params = Array();
+        params.push_back(accessToken.tokenString);
+        obj->call_deferred(String("login_success"), params);
+    }else{
+        [[[FBSDKLoginManager alloc] init] logInWithPublishPermissions: @[]
+        fromViewController: [AppDelegate getViewController]
+        handler: ^ (FBSDKLoginManagerLoginResult *result, NSError *error){
+            Object *obj = ObjectDB::get_instance(callbackId);
+            Array params = Array();
+            if (error != nil){
+                params.push_back(error.localizedDescription);
+                obj->call_deferred(String("login_failed"), params);
+            }else if (result.isCancelled){
+                obj->call_deferred(String("login_cancelled"));
+            }else{
+                FBSDKAccessToken *accessToken = [FBSDKAccessToken currentAccessToken];
+                params.push_back(accessToken.tokenString);
+                obj->call_deferred(String("login_success"), params);
+            }
+        }];
+    }
+
 }
 
 void GodotFacebook::logout(){
