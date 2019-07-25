@@ -52,11 +52,11 @@ void GodotFacebook::login(){
             }
         }];
     }
-
 }
 
 void GodotFacebook::logout(){
     NSLog(@"GodotFacebook Module logout");
+    [[[FBSDKLoginManager alloc] init] logout];
 }
 
 void GodotFacebook::setFacebookCallbackId(int cbackId){
@@ -69,9 +69,19 @@ int GodotFacebook::getFacebookCallbackId(){
     return callbackId;
 }
 
-bool GodotFacebook::isLoggedIn(){
+void GodotFacebook::isLoggedIn(){
     NSLog(@"GodotFacebook Module is logged in");
-    return false;
+    FBSDKAccessToken *accessToken = [FBSDKAccessToken currentAccessToken];
+    Object *obj = ObjectDB::get_instance(callbackId);
+    if ([FBSDKAccessToken currentAccessTokenIsActive]){
+        obj->call_deferred(String("login_success"), [accessToken.tokenString UTF8String]);
+    }else{
+        if (accessToken == nil){
+            obj->call_deferred(String("login_failed"), [@"No token" UTF8String]);
+        }else{
+            obj->call_deferred(String("login_failed"), [@"No expired" UTF8String]);
+        }
+    }
 }
 
 void GodotFacebook::shareLink(const String &url, const String &quote){
