@@ -36,24 +36,19 @@ void GodotFacebook::login(){
     if ([FBSDKAccessToken currentAccessTokenIsActive]){
         FBSDKAccessToken *accessToken = [FBSDKAccessToken currentAccessToken];
         Object *obj = ObjectDB::get_instance(callbackId);
-        Array params = Array();
-        params.push_back(accessToken.tokenString);
-        obj->call_deferred(String("login_success"), params);
+        obj->call_deferred(String("login_success"), [accessToken.tokenString UTF8String]);
     }else{
         [[[FBSDKLoginManager alloc] init] logInWithPublishPermissions: @[]
         fromViewController: [AppDelegate getViewController]
         handler: ^ (FBSDKLoginManagerLoginResult *result, NSError *error){
             Object *obj = ObjectDB::get_instance(callbackId);
-            Array params = Array();
             if (error != nil){
-                params.push_back(error.localizedDescription);
-                obj->call_deferred(String("login_failed"), params);
+                obj->call_deferred(String("login_failed"), [error.localizedDescription UTF8String]);
             }else if (result.isCancelled){
                 obj->call_deferred(String("login_cancelled"));
             }else{
                 FBSDKAccessToken *accessToken = [FBSDKAccessToken currentAccessToken];
-                params.push_back(accessToken.tokenString);
-                obj->call_deferred(String("login_success"), params);
+                obj->call_deferred(String("login_success"), [accessToken.tokenString UTF8String]);
             }
         }];
     }
