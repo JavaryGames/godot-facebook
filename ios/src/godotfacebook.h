@@ -9,9 +9,8 @@ class GodotFacebook: public Reference{
 
     bool initialized;
     int callbackId;
-        
-    GodotFacebook *instance;
 
+    GodotFacebook *instance;
 
 protected:
     static void _bind_methods();
@@ -23,7 +22,7 @@ public:
     void logout();
     void setFacebookCallbackId(int instanceId);
     int  getFacebookCallbackId();
-    bool isLoggedIn();
+    void isLoggedIn();
     void shareLink(const String &url, const String &quote);
     void shareLinkWithoutQuote(const String &url);
     void sendEvent(const String &eventName);
