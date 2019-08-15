@@ -10,6 +10,38 @@
 #import <FBSDKShareKit/FBSDKShareKit.h>
 #import <Bolts/Bolts.h>
 
+NSDictionary *convertFromDictionary(const Dictionary& dict)
+{
+    NSMutableDictionary *result = [NSMutableDictionary new];
+    for(int i=0; i<dict.size(); i++) {
+        Variant key = dict.get_key_at_index(i); 
+        Variant val = dict.get_value_at_index(i);
+        if(key.get_type() == Variant::STRING) {
+            NSString *strKey = [NSString stringWithUTF8String:((String)key).utf8().get_data()];
+            if(val.get_type() == Variant::INT) {
+                int i = (int)val;
+                result[strKey] = @(i);
+            } else if(val.get_type() == Variant::REAL) {
+                double d = (double)val;
+                result[strKey] = @(d);
+            } else if(val.get_type() == Variant::STRING) {
+                NSString *s = [NSString stringWithUTF8String:((String)val).utf8().get_data()];
+                result[strKey] = s;
+            } else if(val.get_type() == Variant::BOOL) {
+                BOOL b = (bool)val;
+                result[strKey] = @(b);
+            } else if(val.get_type() == Variant::DICTIONARY) {
+                NSDictionary *d = convertFromDictionary((Dictionary)val);
+                result[strKey] = d;
+            } else {
+                ERR_PRINT("Unexpected type as dictionary value");
+            }
+        } else {
+            ERR_PRINT("Non string key in Dictionary");
+        }
+    }
+    return result;
+}
 
 GodotFacebook::GodotFacebook() {
     ERR_FAIL_COND(instance != NULL);
@@ -105,6 +137,10 @@ void GodotFacebook::shareLinkWithoutQuote(const String &url){
     [shareDialog show];
 }
 
+void GodotFacebook::sendEventWithParams(const String &eventName, const Dictionary& key_values) {
+    [FBSDKAppEvents logEvent:[NSString stringWithCString:eventName.utf8().get_data() encoding: NSUTF8StringEncoding] parameters:convertFromDictionary(key_values)];
+}
+
 void GodotFacebook::sendEvent(const String &eventName) {
     [FBSDKAppEvents logEvent:[NSString stringWithCString:eventName.utf8().get_data() encoding: NSUTF8StringEncoding]];
 }
@@ -118,7 +154,6 @@ void GodotFacebook::sendAchieveLevelEvent(const String &level){
     [FBSDKAppEvents logEvent:FBSDKAppEventNameAchievedLevel parameters:params];
 }
 
-
 void GodotFacebook::_bind_methods() {
     ClassDB::bind_method("init",&GodotFacebook::init);
     ClassDB::bind_method("login",&GodotFacebook::login);
@@ -129,6 +164,7 @@ void GodotFacebook::_bind_methods() {
     ClassDB::bind_method("shareLink",&GodotFacebook::shareLink);
     ClassDB::bind_method("shareLinkWithoutQuote",&GodotFacebook::shareLinkWithoutQuote);
     ClassDB::bind_method("sendEvent", &GodotFacebook::sendEvent);
+    ClassDB::bind_method("sendEventWithParams", &GodotFacebook::sendEventWithParams);
     ClassDB::bind_method("sendContentViewEvent", &GodotFacebook::sendContentViewEvent);
     ClassDB::bind_method("sendAchieveLevelEvent", &GodotFacebook::sendAchieveLevelEvent);
 }

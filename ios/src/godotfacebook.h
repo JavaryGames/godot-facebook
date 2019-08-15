@@ -26,6 +26,7 @@ public:
     void shareLink(const String &url, const String &quote);
     void shareLinkWithoutQuote(const String &url);
     void sendEvent(const String &eventName);
+    void sendEventWithParams(const String &eventName, const Dictionary& key_values);
     void sendContentViewEvent();
     void sendAchieveLevelEvent(const String &level);
 
