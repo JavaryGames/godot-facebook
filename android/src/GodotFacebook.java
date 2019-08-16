@@ -31,14 +31,14 @@ public class GodotFacebook extends Godot.SingletonBase {
     private ShareDialog shareDialog;
     private AppEventsLogger logger;
 
-    static public Godot.SingletonBase initialize(Activity p_activity) { 
-        return new GodotFacebook(p_activity); 
-    } 
+    static public Godot.SingletonBase initialize(Activity p_activity) {
+        return new GodotFacebook(p_activity);
+    }
 
     public GodotFacebook(Activity p_activity) {
         registerClass("GodotFacebook", new String[]{"init", "setFacebookCallbackId",
          "getFacebookCallbackId", "login", "logout", "isLoggedIn", "shareLink",
-         "shareLinkWithoutQuote", "sendEvent", "sendContentViewEvent", "sendAchieveLevelEvent"});
+         "shareLinkWithoutQuote", "sendEvent", "sendEventWithParams", "sendContentViewEvent", "sendAchieveLevelEvent"});
         activity = (Godot)p_activity;
         callbackManager = CallbackManager.Factory.create();
         shareDialog = new ShareDialog(p_activity);
@@ -61,9 +61,9 @@ public class GodotFacebook extends Godot.SingletonBase {
                     GodotLib.calldeferred(facebookCallbackId, "login_failed", new Object[]{exception.toString()});
                 }
             });
-            
+
         // Share Dialog callbacks
-        
+
         shareDialog.registerCallback(callbackManager, new FacebookCallback<Sharer.Result>() {
             @Override
             public void onSuccess(Sharer.Result result) {
@@ -80,7 +80,7 @@ public class GodotFacebook extends Godot.SingletonBase {
                 GodotLib.calldeferred(facebookCallbackId, "share_failed", new Object[]{error.toString()});
             }
         });
-        
+
     }
 
     // Public methods
@@ -91,11 +91,11 @@ public class GodotFacebook extends Godot.SingletonBase {
             public void run() {
                 try {
                     FacebookSdk.setApplicationId(key);
-                    FacebookSdk.sdkInitialize(activity.getApplicationContext());                  
+                    FacebookSdk.sdkInitialize(activity.getApplicationContext());
                 } catch (FacebookSdkNotInitializedException e) {
-                    Log.e("godot", "Failed to initialize FacebookSdk: " + e.getMessage()); 
+                    Log.e("godot", "Failed to initialize FacebookSdk: " + e.getMessage());
                 } catch (Exception e) {
-                    Log.e("godot", "Exception: " + e.getMessage());  
+                    Log.e("godot", "Exception: " + e.getMessage());
                 }
             }
         });
@@ -104,6 +104,15 @@ public class GodotFacebook extends Godot.SingletonBase {
     public void sendEvent(final String eventName) {
         logger.logEvent(eventName);
     }
+
+    public void sendEventWithParams(final String eventName, final Dictionary keyValues) {
+		// Generate bundle out of keyValues
+		Bundle params = new Bundle();
+		if (!keyValues.isEmpty()){
+			GodotFacebook.putAllInDict(params, keyValues);
+		}
+		logger.logEvent(eventName, params);
+	}
 
     public void sendContentViewEvent() {
         logger.logEvent(AppEventsConstants.EVENT_NAME_VIEWED_CONTENT);
@@ -150,7 +159,7 @@ public class GodotFacebook extends Godot.SingletonBase {
             GodotLib.calldeferred(facebookCallbackId, "login_success", new Object[]{accessToken.getToken()});
         }
     }
-    
+
     public void shareLinkWithoutQuote(final String link){
         Log.i("godot", "Facebook shareLink");
         if (ShareDialog.canShow(ShareLinkContent.class)) {
@@ -160,7 +169,7 @@ public class GodotFacebook extends Godot.SingletonBase {
         	shareDialog.show(linkContent);
         }
     }
-    
+
     public void shareLink(final String link, final String quote){
         Log.i("godot", "Facebook shareLink");
         if (ShareDialog.canShow(ShareLinkContent.class)) {
@@ -181,6 +190,37 @@ public class GodotFacebook extends Godot.SingletonBase {
 
     @Override protected void onMainActivityResult (int requestCode, int resultCode, Intent data){
         callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public static void putAllInDict(Bundle bundle, Dictionary keyValues) {
+        String[] keys = keyValues.get_keys();
+        for (int i = 0; i < keys.length; i++) {
+            String key = keys[i];
+            GodotFacebook.putGodotValue(bundle, key, keyValues.get(key));
+        }
+    }
+
+    public static void putGodotValue(Bundle bundle, String key, Object value) {
+
+        if (value instanceof Boolean) {
+            bundle.putBoolean(key, (Boolean) value);
+
+        } else if (value instanceof Integer) {
+            bundle.putInt(key, (Integer) value);
+
+        } else if (value instanceof Double) {
+            bundle.putDouble(key, (Double) value);
+
+        } else if (value instanceof String) {
+            bundle.putString(key, (String) value);
+
+        } else {
+
+            if (value != null) {
+                bundle.putString(key, value.toString());
+            }
+
+        }
     }
 
 }
