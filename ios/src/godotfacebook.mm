@@ -88,7 +88,7 @@ void GodotFacebook::login(){
 
 void GodotFacebook::logout(){
     NSLog(@"GodotFacebook Module logout");
-    [[[FBSDKLoginManager alloc] init] logout];
+    [[[FBSDKLoginManager alloc] init] logOut];
 }
 
 void GodotFacebook::setFacebookCallbackId(int cbackId){
