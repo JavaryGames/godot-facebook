@@ -3,11 +3,11 @@ def can_build(plat):
 
 def configure(env):
     if (env['platform'] == 'android'):
+        env.disable_module()	
         return
         env.android_add_dependency("implementation 'com.facebook.android:facebook-android-sdk:4.39.0'")
         env.android_add_to_manifest("android/AndroidManifestChunk.xml")
         env.android_add_java_dir("android/src/")
-        env.disable_module()	
         
     if env['platform'] == "iphone":
         env.Append(FRAMEWORKPATH=['ios/lib'])
